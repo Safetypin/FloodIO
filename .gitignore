@@ -1,0 +1,14 @@
+target
+#User-specific stuff:
+.idea
+.settings
+.classpath
+.project
+/logs/
+/project/*-shim.sbt
+/project/project/
+/project/target/
+/target/
+bin
+*.DS_Store
+build/
