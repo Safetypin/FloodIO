@@ -1,4 +1,5 @@
 import java.nio.file.{Files, Paths, StandardCopyOption}
+
 import NativePackagerHelper._
 import sbt.Keys.mappings
 
@@ -19,12 +20,16 @@ libraryDependencies += "io.gatling"            % "gatling-test-framework"    % "
 
 topLevelDirectory := Some("user-files")
 
-mappings in Universal  <<= (mappings in Universal) map { mappings =>
-  mappings filter { case (_, name) => name.contains("config") || name.contains("shapeless")}
-  }
-  mappings in Universal ++= directory("/src/test/scala/simulations")
-  mappings in Universal += { ((resourceDirectory in Test).value / "gatling.conf") -> "conf/reference.conf"}
+// Inlcude only spray-json & config in our flood.io zip file
+mappings in Universal <<= (mappings in Universal) map { mappings =>
+  mappings filter { case (_, name) => name.contains("spray-json") || name.contains("config") || name.contains("shapeless") || name.contains("jasypt") }
+}
 
+mappings in Universal ++= directory("src/test/scala/simulations")
+
+mappings in Universal += {
+  ((resourceDirectory in Test).value / "gatling.conf") -> "conf/reference.conf"
+}
 
 val moveScenarios = taskKey[File]("move scenarios to target folder")
 
