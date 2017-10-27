@@ -13,25 +13,38 @@ class BasicSimulation extends Simulation {
     .userAgentHeader("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:16.0) Gecko/20100101 Firefox/16.0")
 
   val scn = scenario("Scenario Name") // A scenario is a chain of requests and pauses
-    .exec(requestOne.request)
-    .pause(7) // Note that Gatling has recorder real time pauses
-    .exec(requestTwo.request)
-    .pause(2)
-    .exec(requestThree.request)
-    .pause(3)
-    .exec(requestFour.request)
-    .pause(2)
-    .exec(requestFive.request)
-    .pause(670 milliseconds)
-    .exec(requestSix.request)
-    .pause(629 milliseconds)
-    .exec(requestSeven.request)
-    .pause(734 milliseconds)
-    .exec(requestEight.request)
-    .pause(5)
-    .exec(requestNine.request)
-    .pause(1)
-    .exec(requestTen.request)
+    .exec(
+    forever() {
+      exec(requestOne.request)
+        .pause(7) // Note that Gatling has recorder real time pauses
+        .exec(requestTwo.request)
+        .pause(2)
+        .exec(requestThree.request)
+        .pause(3)
+        .exec(requestFour.request)
+        .pause(2)
+        .exec(requestFive.request)
+        .pause(670 milliseconds)
+        .exec(requestSix.request)
+        .pause(629 milliseconds)
+        .exec(requestSeven.request)
+        .pause(734 milliseconds)
+        .exec(requestEight.request)
+        .pause(5)
+        .exec(requestNine.request)
+        .pause(1)
+        .exec(requestTen.request)
+    })
 
-  setUp(scn.inject(atOnceUsers(1)).protocols(httpConf))
+  setUp(scn.inject(atOnceUsers(40)).protocols(httpConf)
+    .throttle(
+      reachRps(10) in (60),
+      holdFor(60),
+      jumpToRps(20),
+      holdFor(60),
+      jumpToRps(30),
+      holdFor(60),
+      jumpToRps(40),
+      holdFor(60)
+    ))
 }
